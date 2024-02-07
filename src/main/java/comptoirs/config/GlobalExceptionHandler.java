@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining(", "));
 
         // Construct a custom response body or use a predefined one
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Validation error", errorMessage);
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Validation error: " + errorMessage, errorMessage);
 
         // Return a ResponseEntity containing the custom response body and HTTP status
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
