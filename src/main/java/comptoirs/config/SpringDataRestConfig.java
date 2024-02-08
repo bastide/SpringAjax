@@ -34,6 +34,7 @@ public class SpringDataRestConfig
         .allowedMethods("GET", "PUT", "POST", "PATCH", "DELETE") // Toutes les méthodes http sont autorisées
         .allowCredentials(false) // Pas de cookies
         .maxAge(3600); // Durée de la réponse en secondes
+*/
   }
- */
+
 }
