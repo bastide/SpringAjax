@@ -2,7 +2,9 @@ package comptoirs.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -15,14 +17,16 @@ import comptoirs.dao.ProduitRepository;
 import comptoirs.entity.Commande;
 import comptoirs.entity.Ligne;
 
-
 import jakarta.validation.constraints.Positive;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @Validated // Les annotations de validation sont actives sur les méthodes de ce service
 // (ex: @Positive)
 public class CommandeService {
-    // La couche "Service" utilise la couche "Accès aux données" pour effectuer les traitements
+    // La couche "Service" utilise la couche "Accès aux données" pour effectuer les
+    // traitements
     private final CommandeRepository commandeDao;
     private final ClientRepository clientDao;
     private final LigneRepository ligneDao;
@@ -30,7 +34,8 @@ public class CommandeService {
 
     // @Autowired
     // Spring initialisera automatiquement ces paramètres
-    public CommandeService(CommandeRepository commandeDao, ClientRepository clientDao, LigneRepository ligneDao, ProduitRepository produitDao) {
+    public CommandeService(CommandeRepository commandeDao, ClientRepository clientDao, LigneRepository ligneDao,
+            ProduitRepository produitDao) {
         this.commandeDao = commandeDao;
         this.clientDao = clientDao;
         this.ligneDao = ligneDao;
@@ -43,7 +48,8 @@ public class CommandeService {
      * Règles métier :
      * - le client doit exister
      * - On initialise l'adresse de livraison avec l'adresse du client
-     * - Si le client a déjà commandé plus de 100 articles, on lui offre une remise de 15%
+     * - Si le client a déjà commandé plus de 100 articles, on lui offre une remise
+     * de 15%
      *
      * @param clientCode la clé du client
      * @return la commande créée
@@ -51,13 +57,15 @@ public class CommandeService {
      */
     @Transactional
     public Commande creerCommande(@NonNull String clientCode) {
+        log.info("Service : Création d'une commande pour {}", clientCode);
         // On vérifie que le client existe
         var client = clientDao.findById(clientCode).orElseThrow();
         // On crée une commande pour ce client
         var nouvelleCommande = new Commande(client);
         // On initialise l'adresse de livraison avec l'adresse du client
         nouvelleCommande.setAdresseLivraison(client.getAdresse());
-        // Si le client a déjà commandé plus de 100 articles, on lui offre une remise de 15%
+        // Si le client a déjà commandé plus de 100 articles, on lui offre une remise de
+        // 15%
         // La requête SQL nécessaire est définie dans l'interface ClientRepository
         var nbArticles = clientDao.nombreArticlesCommandesPar(clientCode);
         if (nbArticles > 100) {
@@ -71,29 +79,42 @@ public class CommandeService {
     /**
      * <pre>
      * Service métier :
-     *     Enregistre une nouvelle ligne de commande pour une commande connue par sa clé,
-     *     Incrémente la quantité totale commandée (Produit.unitesCommandees) avec la quantite à commander
+     * Enregistre une nouvelle ligne de commande pour une commande connue par sa
+     * clé,
+     * Incrémente la quantité totale commandée (Produit.unitesCommandees) avec la
+     * quantite à commander
      * Règles métier :
-     *     - le produit référencé doit exister et ne pas être indisponible
-     *     - la commande doit exister
-     *     - la commande ne doit pas être déjà envoyée (le champ 'envoyeele' doit être null)
-     *     - la quantité doit être positive
-     *     - La quantité en stock du produit ne doit pas être inférieure au total des quantités commandées
+     * - le produit référencé doit exister et ne pas être indisponible
+     * - la commande doit exister
+     * - la commande ne doit pas être déjà envoyée (le champ 'envoyeele' doit être
+     * null)
+     * - la quantité doit être positive
+     * - La quantité en stock du produit ne doit pas être inférieure au total des
+     * quantités commandées
+     *
      * <pre>
      *
-     *  @param commandeNum la clé de la commande
-     *  @param produitRef la clé du produit
-     *  @param quantite la quantité commandée (positive)
-     *  @return la ligne de commande créée
-     *  @throws java.util.NoSuchElementException si la commande ou le produit n'existe pas
-     *  @throws IllegalStateException si il n'y a pas assez de stock, si la commande a déjà été envoyée, ou si le produit est indisponible
-     *  @throws jakarta.validation.ConstraintViolationException si la quantité n'est pas positive
+     * @param commandeNum la clé de la commande
+     * @param produitRef  la clé du produit
+     * @param quantite    la quantité commandée (positive)
+     * @return la ligne de commande créée
+     * @throws java.util.NoSuchElementException                si la commande ou le
+     *                                                         produit n'existe pas
+     * @throws IllegalStateException                           si il n'y a pas assez
+     *                                                         de stock, si la
+     *                                                         commande a déjà été
+     *                                                         envoyée, ou si le
+     *                                                         produit est
+     *                                                         indisponible
+     * @throws jakarta.validation.ConstraintViolationException si la quantité n'est
+     *                                                         pas positive
      */
     @Transactional
     public Ligne ajouterLigne(int commandeNum, int produitRef, @Positive int quantite) {
+        log.info("Service : D'une ligne ({}, {}) à la commande {}", produitRef, quantite, commandeNum);
         // On vérifie que le produit existe
         var produit = produitDao.findById(produitRef).orElseThrow();
-        // On  vérifie que le produit n'est pas marqué indisponible
+        // On vérifie que le produit n'est pas marqué indisponible
         if (produit.isIndisponible()) {
             throw new IllegalStateException("Produit indisponible");
         }
@@ -107,30 +128,38 @@ public class CommandeService {
         if (commande.getEnvoyeele() != null) {
             throw new IllegalStateException("Commande déjà envoyée");
         }
-        // On crée une ligne de commande pour cette commande
-        var nouvelleLigne = new Ligne(commande, produit, quantite);
-        // On enregistre la ligne de commande (génère la clé)
-        ligneDao.save(nouvelleLigne);
-        // On incrémente la quantité commandée
+        // On cherche si une ligne existe déjà dans la commande pour ce produit
+        var ligne = ligneDao.findByCommandeNumeroAndProduitReference(commande.getNumero(), produit.getReference()).
+        // Si pas trouvé on crée une nouvelle ligne
+                orElse(new Ligne(commande, produit, 0));
+        // On incrémente la quantité de la ligne
+        ligne.setQuantite(ligne.getQuantite() + quantite);
+        // On incrémente la quantité commandée pour le produit
         produit.setUnitesCommandees(produit.getUnitesCommandees() + quantite);
         // Inutile de sauvegarder le produit, les entités modifiées par une transaction
         // sont automatiquement sauvegardées à la fin de la transaction
-        return nouvelleLigne;
+        // On enregistre la ligne de commande (génère la clé)
+        ligneDao.save(ligne);
+        return ligne;
     }
 
     /**
      * Service métier : Enregistre l'expédition d'une commande connue par sa clé
      * Règles métier :
      * - la commande doit exister
-     * - la commande ne doit pas être déjà envoyée (le champ 'envoyeele' doit être null)
+     * - la commande ne doit pas être déjà envoyée (le champ 'envoyeele' doit être
+     * null)
      * - On renseigne la date d'expédition (envoyeele) avec la date du jour
      * - Pour chaque produit dans les lignes de la commande :
-     *        décrémente la quantité en stock  (Produit.unitesEnStock)    de la quantité dans la commande
-     *        décrémente la quantité commandée (Produit.unitesCommandees) de la quantité dans la commande
+     * décrémente la quantité en stock (Produit.unitesEnStock) de la quantité dans
+     * la commande
+     * décrémente la quantité commandée (Produit.unitesCommandees) de la quantité
+     * dans la commande
+     *
      * @param commandeNum la clé de la commande
      * @return la commande mise à jour
      * @throws java.util.NoSuchElementException si la commande n'existe pas
-     * @throws IllegalStateException si la commande a déjà été envoyée
+     * @throws IllegalStateException            si la commande a déjà été envoyée
      */
     @Transactional
     public Commande enregistreExpedition(int commandeNum) {
@@ -147,5 +176,21 @@ public class CommandeService {
             produit.setUnitesCommandees(produit.getUnitesCommandees() - ligne.getQuantite());
         });
         return commande;
+    }
+
+    /**
+     * Service métier : Récupère une commande connue par sa clé
+     *
+     * @param commandeNum la clé de la commande
+     * @return la commande
+     * @throws java.util.NoSuchElementException si la commande n'existe pas
+     */
+    public Commande getCommande(int commandeNum) {
+        return commandeDao.findById(commandeNum).orElseThrow();
+    }
+
+    @Transactional
+    public List<Commande> getCommandeEnCoursPour(String clientCode) {
+        return commandeDao.commandesEnCoursPour(clientCode);
     }
 }

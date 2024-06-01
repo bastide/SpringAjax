@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.1</version>
+        <version>3.3.0</version>
         <relativePath/>
         <!-- lookup parent from repository -->
     </parent>
@@ -24,6 +24,12 @@
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
         <dependency>
             <!-- JPA -->
             <groupId>org.springframework.boot</groupId>
@@ -129,6 +135,12 @@
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
             <version>3.2.0</version>
+        </dependency>
+        <dependency>
+        <!-- Pour ModelMapper...  -->
+        <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.2.1-jre</version> <!-- Use the latest version available -->
         </dependency>
     </dependencies>
 

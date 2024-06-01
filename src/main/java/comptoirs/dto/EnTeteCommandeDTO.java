@@ -6,9 +6,8 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class CommandeDTO {
+public class EnTeteCommandeDTO {
     private Integer numero;
-    private LocalDate saisiele;
     private ClientDTO client;
-    private List<LigneDTO> lignes;
+    private LocalDate saisiele;
 }

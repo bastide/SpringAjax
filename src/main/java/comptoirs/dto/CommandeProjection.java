@@ -8,7 +8,7 @@ import java.util.List;
  * On définit une projection pour transmettre des informations sur une commande et ses lignes de commande.
  */
 public interface CommandeProjection {
-    // Pour les commandes on ne garder que le numéro et la date de saisie
+    // Pour les commandes on ne garde que le numéro et la date de saisie
     Integer getNumero();
     LocalDate getSaisiele();
 

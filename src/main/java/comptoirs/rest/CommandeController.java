@@ -1,6 +1,7 @@
 package comptoirs.rest;
 
 import comptoirs.dto.CommandeDTO;
+import comptoirs.dto.EnTeteCommandeDTO;
 import comptoirs.dto.LigneDTO;
 import comptoirs.entity.Commande;
 
@@ -10,6 +11,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import comptoirs.service.CommandeService;
+
+import java.util.List;
+import java.util.ArrayList;
 
 @RestController // Cette classe est un contrôleur REST
 @RequestMapping(path = "/services/commandes") // chemin d'accès
@@ -31,9 +35,9 @@ public class CommandeController {
 	}
 
 	@PostMapping("expedier/{commandeNum}")
-	public CommandeDTO expedier(@PathVariable Integer commandeNum) {
+	public EnTeteCommandeDTO expedier(@PathVariable Integer commandeNum) {
         log.info("expedier {}", commandeNum);
-		return mapper.map(commandeService.enregistreExpedition(commandeNum), CommandeDTO.class);
+		return mapper.map(commandeService.enregistreExpedition(commandeNum), EnTeteCommandeDTO.class);
 	}
 
 	@PostMapping("ajouterLigne")
@@ -42,4 +46,21 @@ public class CommandeController {
 		var ligne = commandeService.ajouterLigne(commandeNum, produitRef, quantite);
 		return mapper.map(ligne, LigneDTO.class);
 	}
+
+    @GetMapping("{commandeNum}")
+    public CommandeDTO getCommande(@PathVariable Integer commandeNum) {
+        log.info("getCommande {}", commandeNum);
+        return mapper.map(commandeService.getCommande(commandeNum), CommandeDTO.class);
+    }
+
+    @GetMapping("enCoursPour/{clientCode}")
+    public List<EnTeteCommandeDTO> getCommandeEnCoursPour(@PathVariable @NonNull String clientCode) {
+        log.info("getCommandeEnCoursPour {}", clientCode);
+        List<Commande> commandes = commandeService.getCommandeEnCoursPour(clientCode);
+        List<EnTeteCommandeDTO> commandesDTO = new ArrayList<>();
+        for (Commande commande : commandes) {
+            commandesDTO.add(mapper.map(commande, EnTeteCommandeDTO.class));
+        }
+        return commandesDTO;
+    }
 }

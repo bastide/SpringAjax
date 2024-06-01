@@ -39,6 +39,11 @@ public interface ProduitRepository extends JpaRepository<Produit, Integer> {
 		+ "GROUP BY p.nom ")
 	public List<Object> produitsVendusPourV2(Integer codeCategorie);
 
-    List<Produit> findByIndisponibleFalseAndUnitesEnStockGreaterThan(int stock);
+	@Query("""
+        SELECT p from Produit p
+        WHERE p.indisponible = false
+        AND p.unitesEnStock > p.unitesCommandees
+    """)
+    List<Produit> produitsDisponibles();
 
 }
