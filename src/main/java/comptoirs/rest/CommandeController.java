@@ -7,6 +7,7 @@ import comptoirs.entity.Commande;
 
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,9 +49,11 @@ public class CommandeController {
 	}
 
     @DeleteMapping("supprimerLigne/{idLigne}")
-    public void supprimerLigne(@PathVariable Integer idLigne) {
+    public ResponseEntity<Void>  supprimerLigne(@PathVariable Integer idLigne) {
         log.info("Contrôleur : supprimerLigne {}", idLigne);
         commandeService.supprimerLigne(idLigne);
+        // Renvoie : 204 - No Content
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("{commandeNum}")
