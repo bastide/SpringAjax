@@ -15,10 +15,11 @@ import comptoirs.service.CommandeService;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
-@RestController // Cette classe est un contrôleur REST
-@RequestMapping(path = "/services/commandes") // chemin d'accès
 @Slf4j
+@RestController // Cette classe est un contrôleur REST
+@RequestMapping(path = "/api/services/commandes") // chemin d'accès
 public class CommandeController {
 	private final CommandeService commandeService;
 	private final ModelMapper mapper;
@@ -28,27 +29,34 @@ public class CommandeController {
 		this.mapper = mapper;
 	}
 
-	@PostMapping("ajouterPour/{clientCode}")
-	public CommandeDTO ajouter(@PathVariable @NonNull String clientCode) {
+    // Il vaudrait mieux @PostMapping("ajouterPour/{clientCode}")
+	@RequestMapping("ajouterPour/{clientCode}")
+	public  ResponseEntity<CommandeDTO> ajouter(@PathVariable @NonNull String clientCode) {
         log.info("Contrôleur : ajouter commande pour {}", clientCode);
 		Commande commande = commandeService.creerCommande(clientCode);
-		return mapper.map(commande, CommandeDTO.class);
+        var body = mapper.map(commande, CommandeDTO.class);
+        return ResponseEntity.ok(body);
 	}
 
-	@PostMapping("expedier/{commandeNum}")
-	public EnTeteCommandeDTO expedier(@PathVariable Integer commandeNum) {
+    //  Il vaudrait mieux @PostMapping("expedier/{commandeNum}")
+	@RequestMapping("expedier/{commandeNum}")
+	public ResponseEntity<EnTeteCommandeDTO> expedier(@PathVariable Integer commandeNum) {
         log.info("Contrôleur : expédier la commande {}", commandeNum);
-		return mapper.map(commandeService.enregistreExpedition(commandeNum), EnTeteCommandeDTO.class);
+        var body = mapper.map(commandeService.enregistreExpedition(commandeNum), EnTeteCommandeDTO.class);
+		return ResponseEntity.ok(body);
 	}
 
-	@PostMapping("ajouterLigne")
-	public LigneDTO ajouterLigne(@RequestParam int commandeNum, @RequestParam int produitRef, @RequestParam int quantite) {
+    // il vaudrait mieux @PostMapping("ajouterLigne")
+	@RequestMapping("ajouterLigne")
+	public ResponseEntity<LigneDTO> ajouterLigne(@RequestParam int commandeNum, @RequestParam int produitRef, @RequestParam int quantite) {
         log.info("Contrôleur : ajouterLigne {} {} {}", commandeNum, produitRef, quantite);
 		var ligne = commandeService.ajouterLigne(commandeNum, produitRef, quantite);
-		return mapper.map(ligne, LigneDTO.class);
+        var body = mapper.map(ligne, LigneDTO.class);
+        return ResponseEntity.ok(body);
 	}
 
-    @DeleteMapping("supprimerLigne/{idLigne}")
+    // Il vaudrait mieux @DeleteMapping("supprimerLigne/{idLigne}")
+    @RequestMapping("supprimerLigne/{idLigne}")
     public ResponseEntity<Void>  supprimerLigne(@PathVariable Integer idLigne) {
         log.info("Contrôleur : supprimerLigne {}", idLigne);
         commandeService.supprimerLigne(idLigne);
@@ -57,19 +65,24 @@ public class CommandeController {
     }
 
     @GetMapping("{commandeNum}")
-    public CommandeDTO getCommande(@PathVariable Integer commandeNum) {
+    public ResponseEntity<CommandeDTO> getCommande(@PathVariable Integer commandeNum) {
         log.info("Contrôleur : getCommande {}", commandeNum);
-        return mapper.map(commandeService.getCommande(commandeNum), CommandeDTO.class);
+        var body = mapper.map(commandeService.getCommande(commandeNum), CommandeDTO.class);
+        return ResponseEntity.ok(body);
     }
 
     @GetMapping("enCoursPour/{clientCode}")
-    public List<EnTeteCommandeDTO> getCommandeEnCoursPour(@PathVariable @NonNull String clientCode) {
+    public ResponseEntity<List<EnTeteCommandeDTO>> getCommandeEnCoursPour(@PathVariable @NonNull String clientCode) {
         log.info("Contrôleur : getCommandeEnCoursPour {}", clientCode);
         List<Commande> commandes = commandeService.getCommandeEnCoursPour(clientCode);
-        List<EnTeteCommandeDTO> commandesDTO = new ArrayList<>();
+
+        List<EnTeteCommandeDTO> result = new ArrayList<>();
         for (Commande commande : commandes) {
-            commandesDTO.add(mapper.map(commande, EnTeteCommandeDTO.class));
+            result.add(mapper.map(commande, EnTeteCommandeDTO.class));
         }
-        return commandesDTO;
+        // Ca peut s'écrire en une ligne avec une expression lambda
+        // List<EnTeteCommandeDTO> result = commandes.stream().map(commande -> mapper.map(commande, EnTeteCommandeDTO.class)).collect(Collectors.toList());
+
+        return  ResponseEntity.ok(result);
     }
 }

@@ -12,10 +12,10 @@ import org.springframework.http.MediaType;
 
 
 import comptoirs.dao.ProduitRepository;
-import comptoirs.dto.UnitesParProduit;
+import comptoirs.dao.UnitesParProduit;
 
 @RestController
-@RequestMapping(path = "/services/stats")
+@RequestMapping(path = "/api/stats")
 public class StatisticsRestController {
 	@Autowired
 	private ProduitRepository dao;

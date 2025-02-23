@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import comptoirs.dto.CommandeProjection;
 import comptoirs.entity.Commande;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called CommandeRepository

@@ -1,7 +1,7 @@
 package comptoirs.rest;
 
 import comptoirs.dao.CommandeRepository;
-import comptoirs.dto.CommandeProjection;
+import comptoirs.dao.CommandeProjection;
 import comptoirs.entity.Commande;
 import comptoirs.entity.Ligne;
 
@@ -21,7 +21,7 @@ import java.net.URI;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController // Cette classe est un contrôleur REST
-@RequestMapping(path = "/services/commande/other") // chemin d'accès
+@RequestMapping(path = "/api/examples") // chemin d'accès
 public class OtherCommandeController {
 
 	private final CommandeService commandeService;

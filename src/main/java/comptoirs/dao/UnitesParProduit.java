@@ -1,4 +1,4 @@
-package comptoirs.dto;
+package comptoirs.dao;
 
 /**
  * Utilisé pour représenter le résultat des requêtes statistiques

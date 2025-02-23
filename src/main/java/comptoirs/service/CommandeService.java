@@ -33,8 +33,7 @@ public class CommandeService {
 
     // @Autowired
     // Spring initialisera automatiquement ces paramètres
-    public CommandeService(CommandeRepository commandeDao, ClientRepository clientDao, LigneRepository ligneDao,
-            ProduitRepository produitDao) {
+    public CommandeService(CommandeRepository commandeDao, ClientRepository clientDao, LigneRepository ligneDao, ProduitRepository produitDao) {
         this.commandeDao = commandeDao;
         this.clientDao = clientDao;
         this.ligneDao = ligneDao;
@@ -188,7 +187,7 @@ public class CommandeService {
 
         var commande = commandeDao.findById(commandeNum).orElseThrow();
         if (commande.getEnvoyeele() != null) {
-            throw new IllegalStateException("Commande déjà envoyée");
+            throw new IllegalStateException("Commande déjà expédiée");
         }
         commande.setEnvoyeele(LocalDate.now());
         commande.getLignes().forEach(ligne -> {

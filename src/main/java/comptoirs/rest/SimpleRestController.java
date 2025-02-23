@@ -20,7 +20,7 @@ import comptoirs.exceptions.DuplicateException;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController // Cette classe est un contrôleur REST
-@RequestMapping(path = "/services/simple") // chemin d'accès
+@RequestMapping(path = "/api/simple") // chemin d'accès
 @Slf4j // Logger
 public class SimpleRestController {
 	@Autowired
