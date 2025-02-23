@@ -29,8 +29,7 @@ public class CommandeController {
 		this.mapper = mapper;
 	}
 
-    // Il vaudrait mieux @PostMapping("ajouterPour/{clientCode}")
-	@RequestMapping("ajouterPour/{clientCode}")
+	@PostMapping("ajouterPour/{clientCode}")
 	public  ResponseEntity<CommandeDTO> ajouter(@PathVariable @NonNull String clientCode) {
         log.info("Contrôleur : ajouter commande pour {}", clientCode);
 		Commande commande = commandeService.creerCommande(clientCode);
@@ -38,16 +37,14 @@ public class CommandeController {
         return ResponseEntity.ok(body);
 	}
 
-    //  Il vaudrait mieux @PostMapping("expedier/{commandeNum}")
-	@RequestMapping("expedier/{commandeNum}")
+	@PostMapping("expedier/{commandeNum}")
 	public ResponseEntity<EnTeteCommandeDTO> expedier(@PathVariable Integer commandeNum) {
         log.info("Contrôleur : expédier la commande {}", commandeNum);
         var body = mapper.map(commandeService.enregistreExpedition(commandeNum), EnTeteCommandeDTO.class);
 		return ResponseEntity.ok(body);
 	}
 
-    // il vaudrait mieux @PostMapping("ajouterLigne")
-	@RequestMapping("ajouterLigne")
+	@PostMapping("ajouterLigne")
 	public ResponseEntity<LigneDTO> ajouterLigne(@RequestParam int commandeNum, @RequestParam int produitRef, @RequestParam int quantite) {
         log.info("Contrôleur : ajouterLigne {} {} {}", commandeNum, produitRef, quantite);
 		var ligne = commandeService.ajouterLigne(commandeNum, produitRef, quantite);
@@ -55,8 +52,7 @@ public class CommandeController {
         return ResponseEntity.ok(body);
 	}
 
-    // Il vaudrait mieux @DeleteMapping("supprimerLigne/{idLigne}")
-    @RequestMapping("supprimerLigne/{idLigne}")
+    @DeleteMapping("supprimerLigne/{idLigne}")
     public ResponseEntity<Void>  supprimerLigne(@PathVariable Integer idLigne) {
         log.info("Contrôleur : supprimerLigne {}", idLigne);
         commandeService.supprimerLigne(idLigne);
