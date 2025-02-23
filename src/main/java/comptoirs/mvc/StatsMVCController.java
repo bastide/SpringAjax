@@ -17,11 +17,15 @@ public class StatsMVCController {
 		this.dao = dao;
 	}
 
-	@GetMapping(path = "produitsPourCategorie")
 	/**
-	 * Affiche la page des statistiques "unités vendues par produit
-	 * en lui transmettant la liste des catégories
-	 */
+     * Handles a GET request to display product statistics grouped by category.
+     * Adds all available categories to the model for rendering in the view.
+     *
+     * @param model The Model object used to pass attributes to the view.
+     * @return The name of the view template to render for product statistics by category.
+     */
+    @GetMapping(path = "produitsPourCategorie")
+
 	public	String montreStatsProduits(Model model) {
 		model.addAttribute("categories", dao.findAll());
 		return "statsProduitsPourCategorie";

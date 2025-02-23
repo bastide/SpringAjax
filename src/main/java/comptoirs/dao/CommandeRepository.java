@@ -28,7 +28,6 @@ public interface CommandeRepository extends JpaRepository<Commande, Integer> {
     /**
      * Trouve la liste des commandes en cours pour un client donné
      * @param codeClient la clé du client
-     * @param codeClient
      * @return la liste des commandes en cours pour ce client
      */
     @Query("""

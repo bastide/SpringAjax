@@ -12,14 +12,12 @@ import java.util.NoSuchElementException;
 /**
  * The GlobalExceptionHandler class handles exceptions thrown by the application and provides custom response bodies
  * with detailed error messages.
- *
  * This class is annotated with @ControllerAdvice, which allows it to handle exceptions globally for all controllers.
  * It contains two exception handler methods:
  * - handleConstraintViolationException: Handles ConstraintViolationException and constructs a custom response body
  *   with a validation error message.
  * - handleDataIntegrityViolationException: Handles DataIntegrityViolationException and constructs a custom response body
  *   with a data integrity violation message.
- *
  * Both methods return a ResponseEntity object containing the custom response body and the appropriate HTTP status code.
  */
 @ControllerAdvice
