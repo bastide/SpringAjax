@@ -59,7 +59,7 @@ public class CommandeService {
         var nouvelleCommande = new Commande(dispensaire);
         // On initialise l'adresse de livraison avec l'adresse du dispensaire
         nouvelleCommande.setAdresseLivraison(dispensaire.getAdresse());
-        // Si le dispensaire a déjà commandé plus de 100 articles, on lui offre une remise de 15%
+        // Si le dispensaire a déjà commandé plus de 100 médicaments, on lui offre une remise de 15%
         // La requête SQL nécessaire est définie dans l'interface DispensaireRepository
         var nbArticles = dispensaireDao.nombreArticlesCommandesPar(dispensaireCode);
         if (nbArticles > 100) {

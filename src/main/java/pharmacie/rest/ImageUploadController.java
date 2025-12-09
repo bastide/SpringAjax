@@ -26,7 +26,7 @@ public class ImageUploadController {
     private final MedicamentRepository medicamentRepository;
 
     // Chemin vers le répertoire static/images
-    private static final String UPLOAD_DIR = "src/main/resources/static/images/";
+    private static final String UPLOAD_DIR = "/tmp/images/";
 
     @Autowired
     public ImageUploadController(MedicamentRepository medicamentRepository) {

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import pharmacie.dao.CategorieRepository;
 
 @Controller
-@RequestMapping(path = "/comptoirs/stats")
+@RequestMapping(path = "/stats")
 public class StatsMVCController {
 
 	private final CategorieRepository dao;
@@ -28,6 +28,6 @@ public class StatsMVCController {
 
 	public	String montreStatsMedicaments(Model model) {
 		model.addAttribute("categories", dao.findAll());
-		return "statsProduitsPourCategorie";
+		return "statsMedicamentsPourCategorie";
 	}
 }

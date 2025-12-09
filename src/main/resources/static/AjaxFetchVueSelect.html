@@ -12,9 +12,9 @@
 
 <body>
   <div id="app">
-    <select @change="categorieChanged($event)">
-      <option value="" v-model="selectedHref">Choisissez une catégorie</option>
-      <option v-for="categorie in categories" :value="categorie._links.produits.href">
+    <select v-model="selectedHref" @change="categorieChanged($event)">
+      <option value="">Choisissez une catégorie</option>
+      <option v-for="categorie in categories" :value="categorie._links.medicaments.href">
         {{ categorie.libelle }}
       </option>
     </select>
@@ -22,8 +22,8 @@
       <tr>
         <th>Nom</th><th>Prix unitaire</th><th>Unités en stock</th>
       </tr>
-      <tr v-for="produit in produits">
-        <td>{{produit.nom}}</td><td>{{produit.prixUnitaire}}</td><td>{{produit.unitesEnStock}}</td>
+      <tr v-for="medicament in medicaments">
+        <td>{{medicament.nom}}</td><td>{{medicament.prixUnitaire}}</td><td>{{medicament.unitesEnStock}}</td>
       </tr>
     </table>
   </div>
@@ -39,7 +39,7 @@
       data() {
         return {
           categories: [],
-          produits: [],
+          medicaments: [],
           selectedHref: ""
         };
       },
@@ -49,7 +49,7 @@
       methods: {
         categorieChanged(event) {
           console.log("categorieChanged");
-          this.chargeProduits(event.target.value);
+          this.chargeMedicaments(event.target.value);
         },
         chargeCategories() {
           console.log("chargeCategories");
@@ -61,18 +61,18 @@
             })
             .catch((error) => alert(error));
         },
-        chargeProduits(hrefProduits) {
-          console.log("chargeProduits");
-          if (hrefProduits) {
-            fetch(hrefProduits)
+        chargeMedicaments(hrefMedicaments) {
+          console.log("chargeMedicaments");
+          if (hrefMedicaments) {
+            fetch(hrefMedicaments)
               .then((response) => response.json())
               .then((resultat) => {
                 console.log(resultat);
-                this.produits = resultat._embedded.produits;
+                this.medicaments = resultat._embedded.medicaments;
               })
               .catch((error) => alert(error));
           } else {
-            this.produits = [];
+            this.medicaments = [];
           }
         },
       },

@@ -12,7 +12,7 @@
     </parent>
 
     <groupId>io.github.bastide</groupId>
-    <artifactId>comptoirs-spring-jpa</artifactId>
+    <artifactId>pharmacie-spring-jpa</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Pharmacie - Spring JPA</name>
@@ -74,7 +74,7 @@
             <!-- SGBD H2 pour le développement -->
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>runtime</scope>
+            <version>2.2.220</version>
         </dependency>
         <dependency>
             <!-- SGBD Postgres pour le déploiement -->

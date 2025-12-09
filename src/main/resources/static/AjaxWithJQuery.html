@@ -16,7 +16,7 @@
 
 			function doRequest() {
 				$.ajax({
-					url: "comptoirs/simple/wait", // On appelle la méthode du contrôleur
+					url: "api/simple/wait", // On appelle la méthode du contrôleur
 					data: {timeout: 8}, // On passe le timeout en paramètres
 					success: showResult,
 					error: showError
@@ -31,7 +31,7 @@
 			// Fonction qui traite les résultats de la requête
 			function showResult(result) {
 				$("#demo").show();
-				$("#waiting").hide();				
+				$("#waiting").hide();
 				// On affiche le résultat
 				$("#demo").html(result);
 				// On réactive le bouton
@@ -42,8 +42,8 @@
 			function showError(xhr, status, message) {
 				$("#demo").html("Erreur: " + status + " : " + message);
 			}
-			
-		</script>        
+
+		</script>
 	</head>
 	<body>
 		<h1>AJAX / JQuery / Requête longue</h1>
@@ -51,6 +51,6 @@
 		<img id="waiting" src="images/ajax-loader2.gif" alt="Waiting...">
 		<textarea id="demo" rows="3" cols="40">Le résultat apparaîtra ici</textarea>
 		<hr>
-		<a href="./">Retour au menu</a>				
+		<a href="./">Retour au menu</a>
 	</body>
 </html>
