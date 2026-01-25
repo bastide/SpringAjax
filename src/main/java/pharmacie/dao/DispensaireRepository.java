@@ -17,6 +17,11 @@ public interface DispensaireRepository extends JpaRepository<Dispensaire, String
     // Attention : SUM peut renvoyer NULL si on ne trouve pas d'enregistrement
     // On utilise COALESCE pour renvoyer 0 dans ce cas
     // http://www.h2database.com/html/functions.html#coalesce
-    @Query("SELECT COALESCE(SUM(l.quantite), 0) FROM Ligne l WHERE l.commande.dispensaire.code = :dispensaireCode")
+    @Query("""
+        SELECT COALESCE(SUM(l.quantite), 0)
+        FROM Ligne l
+        WHERE l.commande.dispensaire.code = :dispensaireCode
+        AND l.commande.envoyeele IS NOT NULL
+    """)
     int nombreArticlesCommandesPar(String dispensaireCode);
 }

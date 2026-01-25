@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Pour forcer l'enregistrement, on utilise saveAndFlush() au lieu de save(), deleteAndFlush() au lieu de delete()
  */
 @DataJpaTest
-public class RepositoryIntegrityTest {
+class RepositoryIntegrityTest {
 
     @Autowired
     private CategorieRepository categorieRepository;
@@ -29,7 +29,7 @@ public class RepositoryIntegrityTest {
     private LigneRepository ligneRepository;
 
     @Test
-    public void unMedicamentSansCategorieEstInterdit() {
+    void unMedicamentSansCategorieEstInterdit() {
         // Try to save Medicament without Categorie
         Medicament m = new Medicament();
         m.setNom("Doliprane");
@@ -40,7 +40,7 @@ public class RepositoryIntegrityTest {
     }
 
     @Test
-    public void detruireLaCategorieSupprimeSesMedicaments() {
+    void detruireLaCategorieSupprimeSesMedicaments() {
         // Cascade Delete Categorie -> Medicament
         Categorie c = new Categorie();
         c.setLibelle("Antalgiques");
@@ -48,7 +48,7 @@ public class RepositoryIntegrityTest {
         Medicament m = new Medicament();
         m.setNom("Doliprane");
         m.setCategorie(c);
-        
+
         // Use parent cascade
         c.getMedicaments().add(m);
 
@@ -65,7 +65,7 @@ public class RepositoryIntegrityTest {
     }
 
     @Test
-    public void uneCommandeSansDispensaireEstInterdite() {
+    void uneCommandeSansDispensaireEstInterdite() {
         // Try to save Commande without Dispensaire
         Commande commande = new Commande();
         commande.setDestinataire("Mr Smith");
@@ -76,7 +76,7 @@ public class RepositoryIntegrityTest {
     }
 
     @Test
-    public void detruireLeDispensaireSupprimeSesCommandes() {
+    void detruireLeDispensaireSupprimeSesCommandes() {
         // Cascade Delete Dispensaire -> Commande
         Dispensaire d = new Dispensaire();
         d.setCode("D001");
@@ -85,7 +85,7 @@ public class RepositoryIntegrityTest {
         Commande commande = new Commande();
         commande.setDestinataire("Mr Smith");
         commande.setDispensaire(d);
-        
+
         // Use parent cascade
         d.getCommandes().add(commande);
 
@@ -102,18 +102,18 @@ public class RepositoryIntegrityTest {
     }
 
     @Test
-    public void uneLigneSansCommandeOuMedicamentEstInterdite() {
+    void uneLigneSansCommandeOuMedicamentEstInterdite() {
         // Try to save Ligne without Commande/Medicament
         Ligne l1 = new Ligne();
         l1.setQuantite(10);
-        
+
         assertThrows(DataIntegrityViolationException.class, () -> {
             ligneRepository.saveAndFlush(l1);
         });
     }
 
     @Test
-    public void medicamentDupliqueDansUneMemeCommandeEstInterdit() {
+    void medicamentDupliqueDansUneMemeCommandeEstInterdit() {
         // Setup via repositories preferably
         Categorie cat = new Categorie();
         cat.setLibelle("Test Cat");
@@ -144,14 +144,14 @@ public class RepositoryIntegrityTest {
         l3Duplicate.setCommande(cmd);
         l3Duplicate.setMedicament(med);
         l3Duplicate.setQuantite(2);
-        
+
         assertThrows(DataIntegrityViolationException.class, () -> {
             ligneRepository.saveAndFlush(l3Duplicate);
         }, "Should not allow duplicate lines for same Commande and Medicament");
     }
 
     @Test
-    public void testOrphanRemovalLigne() {
+    void testOrphanRemovalLigne() {
         // Setup
         Categorie cat = new Categorie();
         cat.setLibelle("Orphan Cat");
@@ -169,27 +169,44 @@ public class RepositoryIntegrityTest {
 
         Commande cmd = new Commande();
         cmd.setDispensaire(d);
-        
+
         Ligne l = new Ligne();
         l.setCommande(cmd);
         l.setMedicament(med);
         l.setQuantite(1);
-        
+
         // Add to collection
         cmd.getLignes().add(l);
-        
-        cmd = commandeRepository.saveAndFlush(cmd); 
-        
+
+        cmd = commandeRepository.saveAndFlush(cmd);
+
         Ligne persistedLigne = cmd.getLignes().get(0);
         Integer ligneId = persistedLigne.getId();
         assertNotNull(ligneId);
 
         // Remove from collection
         cmd.getLignes().remove(persistedLigne);
-        
+
         commandeRepository.saveAndFlush(cmd);
 
         Optional<Ligne> found = ligneRepository.findById(ligneId);
         assertFalse(found.isPresent(), "Ligne should be deleted when removed from Commande's list (orphanRemoval)");
+    }
+
+    @Test
+    void neDetruitPasUneCategorieSiSesMedicamentsSontCommandes() {
+        Categorie c = categorieRepository.findById(1).orElseThrow();
+        // La catégorie avec code 1 dans le jeu de données de test a 10 médicaments
+
+        int combienDeMedicaments = c.getMedicaments().size();
+        assertEquals(10,combienDeMedicaments, "Categorie with code 1 should have 10 Medicaments");
+
+        try {
+            categorieRepository.delete(c);
+            categorieRepository.flush();
+            fail("Should not allow deletion of Categorie if its Medicaments are referenced in Commandes");
+        } catch (DataIntegrityViolationException e) {
+            // Expected exception
+        }
     }
 }

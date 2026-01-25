@@ -1,14 +1,28 @@
 package pharmacie.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.PositiveOrZero;
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.PositiveOrZero;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter @Setter @NoArgsConstructor @RequiredArgsConstructor @ToString
@@ -18,7 +32,7 @@ public class Medicament {
 	@Setter(AccessLevel.NONE) // la clé est autogénérée par la BD, On ne veut pas de "setter"
 	private Integer reference = null;
 
-	@NonNull
+	@NonNull // Lombok, génère une vérification dans le constructeur par défaut
 	@Column(unique=true, length = 255)
 	private String nom;
 
@@ -63,10 +77,10 @@ public class Medicament {
 	@Column(length = 500)
 	private String imageURL;
 
-	@ManyToOne(optional = false)
-	@NonNull
 	@ToString.Exclude
 	@JsonIgnoreProperties("medicaments") // pour éviter la boucle infinie si on convertit le médicament en JSON
+	@NonNull // Lombok, génère une vérification dans le constructeur par défaut
+	@ManyToOne(optional = false) // La clé étrangère ne peut pas être nulle dans la table Medicament
 	private Categorie categorie ;
 
 	@ToString.Exclude

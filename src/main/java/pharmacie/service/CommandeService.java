@@ -23,8 +23,7 @@ import pharmacie.entity.Ligne;
 @Validated // Les annotations de validation sont actives sur les méthodes de ce service
 // (ex: @Positive)
 public class CommandeService {
-    // La couche "Service" utilise la couche "Accès aux données" pour effectuer les
-    // traitements
+    // La couche "Service" utilise la couche "Accès aux données" pour effectuer les traitements
     private final CommandeRepository commandeDao;
     private final DispensaireRepository dispensaireDao;
     private final LigneRepository ligneDao;

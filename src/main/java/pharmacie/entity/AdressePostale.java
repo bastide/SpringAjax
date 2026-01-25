@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Embeddable // Ne donne pas lieu à une table relationnelle séparée
-//@Emmbedded dans Client et Commande
+//@Emmbedded dans Dispensaire et Commande
 @Data //Lombok, @Getter @Setter @NoArgsConstructor  @RequiredArgsConstructor @ToString
 public class AdressePostale {
 	@Size(max = 60)
