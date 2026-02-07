@@ -55,12 +55,14 @@ class RepositoryIntegrityTest {
         c = categorieRepository.saveAndFlush(c);
         m = c.getMedicaments().get(0);
 
-        assertNotNull(m.getReference(), "Medicament should be saved via cascade");
+        var reference = m.getReference();
+
+        assertNotNull(reference, "Medicament should be saved via cascade");
 
         categorieRepository.delete(c);
         categorieRepository.flush();
 
-        Optional<Medicament> found = medicamentRepository.findById(m.getReference());
+        Optional<Medicament> found = medicamentRepository.findById(reference);
         assertFalse(found.isPresent(), "Medicament should be deleted when Categorie is deleted");
     }
 
@@ -96,8 +98,9 @@ class RepositoryIntegrityTest {
 
         dispensaireRepository.delete(d);
         dispensaireRepository.flush();
+        var numero = commande.getNumero();
 
-        Optional<Commande> found = commandeRepository.findById(commande.getNumero());
+        Optional<Commande> found = commandeRepository.findById(numero);
         assertFalse(found.isPresent(), "Commande should be deleted when Dispensaire is deleted");
     }
 
